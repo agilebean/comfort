@@ -112,6 +112,7 @@ plot_hist_by <- function(id, data, hist_var, by_var)
 # dendogram
 plot_dendrogram <- function(data_transposed, mode)
 {
+  require(dplyr)
   require(dendextend)
   dend <- data_transposed %>% dist %>% hclust %>% as.dendrogram %>%
     set("branches_k_color", k=3) %>% set("branches_lwd", c(5,2,1.5)) %>%
@@ -207,6 +208,7 @@ print_cluster_no <- function(item_list, file_name)
 
 print_cluster_analyis <- function(item_list, file_name, dist, hclust, iterations)
 {
+  require(dplyr)
   require(pvclust)
   require(parallel)
   plot.list <- lapply(item_list, function(items) {

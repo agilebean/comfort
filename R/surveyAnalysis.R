@@ -47,6 +47,7 @@ determine_factor_extraction_no <- function(items_df)
 do_factor_analysis <- function(items_input, n_factors, factor_method,
                                corr_type, cut_off=NULL)
 {
+  require(dplyr)
   items <- na.omit(items_input)
   items <- data.matrix(items)
   # PCA from psych package - works with small sample size!
@@ -190,6 +191,7 @@ remove_duplicates <- function(file)
 ######################################################################
 import_file_google <- function(file_name)
 {
+  require(dplyr)
   # gs_file.dd2() %>% gs_copy(to = filename.dd2)
   file.identifier <- gs_title(file_name)
   ws.identifier <- gs_ws_ls(file.identifier)
