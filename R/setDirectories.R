@@ -3,10 +3,10 @@
 get_prefix <- function()
 {
   prefix <- gsub("^(/.*/.*?)/.*", "\\1", getwd())
-  if (prefix != "/Users/Chaehan")
-  {
-    prefix <- "/home/chaehan"
-  }
+  # if (prefix != "/Users/Chaehan")
+  # {
+  #   prefix <- "/home/chaehan"
+  # }
   return(prefix)
 }
 
