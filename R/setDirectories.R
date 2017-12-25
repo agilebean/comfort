@@ -10,6 +10,10 @@ get_prefix <- function()
   return(prefix)
 }
 
+get_prefix()
+
+eval(parse(text = "get_prefix()"))
+
 # set directories
 credentialsDir <- paste0(get_prefix(), "/Dropbox/06 Machine Learning/06 ML Scripts/_credentials")
 inputML <- paste0(get_prefix(), "/Dropbox/06 Machine Learning/06 ML Scripts/_data/")
