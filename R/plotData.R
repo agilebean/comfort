@@ -110,11 +110,11 @@ plot_hist_by <- function(id, data, hist_var, by_var)
 
 #####
 # dendogram
-plot_dendrogram <- function(data_transposed, mode)
+plot_dendrogram <- function(data, mode)
 {
   require(dplyr)
   require(dendextend)
-  dend <- data_transposed %>% dist %>% hclust %>% as.dendrogram %>%
+  dend <- data %>% dist %>% hclust %>% as.dendrogram %>%
     set("branches_k_color", k=3) %>% set("branches_lwd", c(5,2,1.5)) %>%
     set("branches_lty", c(1,1,3,1,1,2)) %>%
     set("labels_colors") %>% set("labels_cex", c(.9,1.2)) %>%
