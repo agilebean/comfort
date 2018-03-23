@@ -16,15 +16,15 @@ get_path_base <- function()
 path.base <- get_path_base()
 
 # set directories
-credentialsDir <- paste0(path.base, "/03 ML Scripts/_credentials")
-inputML <- paste0(path.base, "/03 ML Scripts/_input")
+credentialsDir <- paste0(path.base, "/03 ML Scripts/_credentials/")
+inputML <- paste0(path.base, "/03 ML Scripts/_input"/)
 outputML <- paste0(path.base, "/03 ML Scripts/_output/")
 
-inputEEG <- paste0(path.base, "/03 EEG Scripts/_input")
-outputEEG <- paste0(path.base, "/03 EEG Scripts/_output")
+inputEEG <- paste0(path.base, "/03 EEG Scripts/_input/")
+outputEEG <- paste0(path.base, "/03 EEG Scripts/_output/")
 
-inputDV <- paste0(path.base, "/03 Datavis Scripts/_input")
-outputDV <- paste0(path.base, "/03 Datavis Scripts/_output")
+inputDV <- paste0(path.base, "/03 Datavis Scripts/_input/")
+outputDV <- paste0(path.base, "/03 Datavis Scripts/_output/")
 
 
 dirs <- list(credentialsDir,
