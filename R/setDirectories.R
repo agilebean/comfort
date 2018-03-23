@@ -2,8 +2,13 @@
 # get path directory path.base, e.g. /Users/Chaehan or /home/chaehan
 get_path_base <- function()
 {
-  # prefix <- gsub("^(/.*/.*?)/.*", "\\1", getwd())
   prefix <- gsub("^(/.*/.*/.*?)/.*", "\\1", getwd())
+
+  if (prefix == "/private/var/folders")
+  {
+    prefix <- "/Users/Chaehan/Google Drive"
+  }
+
   prefix <- paste0(prefix, "/03 Data Analysis")
   return(prefix)
 }
