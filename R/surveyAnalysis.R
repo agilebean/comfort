@@ -135,9 +135,13 @@ scale.effective.labels <- c("Not effective at all","Slightly effective","Moderat
 # scale.extent.labels <- c("Not at all","Slightly","Moderately","Highly","Extremely")
 scale.extent.labels <- c("not at all","a little","moderately","a lot","extremely")
 scale.agreement.labels <- c("Disagree strongly", "Disagree a little", "Neither disagree nor agree", "Agree a little", "Agree strongly")
-scale.likeability.labels <- c("Not at all","Not very much ","Neutral","Very much","Extremely")
-scale.lastwatched.labels <- c("More than 2 years ago","Between 1 - 2 years", "Between 6 months - 1 year", "In the last 6 months")
-scale.numberwatched.labels <- c("0","1-2","3-4","5-6","More than 6")
+scale.likeability.labels <- c("Not at all","Slightly","Moderately","Highly","Extremely")
+scale.animationlike.labels <- c("Not at all","Not very much","Neutral","Very much","Extremely")
+scale.lastwatched.labels <- c("More than 2 years ago",
+                              "Between 1 to 2 years",
+                              "Between 6 months to 1 year",
+                              "In the last 6 months")
+scale.numberwatched.labels <- c("0","1 to 2","3 to 4","5 to 6","More than 6")
 
 quartzFonts(gillsans = c("Gill Sans Light", "Gill Sans Light", "Gill Sans Italic", "Gill Sans Bold Italic"))
 
