@@ -152,20 +152,24 @@ quartzFonts(gillsans = c("Gill Sans Light", "Gill Sans Light", "Gill Sans Italic
 # Function encode_scale_labels()
 # replace scale responses containing label names with their scale codes
 #
-# IN:   matrix (matrix), label_names(vector(char))
-# OUT:  cronbach alpha & r.drop corrected by smc (list)
+# IN:   scale_data_frame (dataframe), scale_labels(vector(char))
+# OUT:  encoded_df (dataframe)
 #
 ######################################################################
-encode_scale_labels <- function(matrix, label_names)
+encode_scale_labels <- function (scale_data_frame, scale_labels)
 {
-  label_no <- length(label_names)
-  scale.codes <- 1:label_no
-  matrix[matrix==""] <- NA
+  matrix <- as.matrix(scale_data_frame)
+  scale.codes <- 1:length(scale_labels)
+  matrix[matrix == ""] <- NA
+
   for (index in scale.codes)
   {
-    matrix[matrix==label_names[index]] <- scale.codes[index]
+    matrix[matrix == scale_labels[index]] <- scale.codes[index]
   }
-  return(matrix)
+
+  # retain the colum names in list
+  encoded_df <- as.data.frame(matrix)
+  return(encoded_df)
 }
 
 # create mean scores of a Latent Variable
