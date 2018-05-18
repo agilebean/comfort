@@ -33,11 +33,14 @@ outputEEG <- paste0(path.base, "/03 EEG Scripts/_output/")
 inputDV <- paste0(path.base, "/03 Datavis Scripts/_input/")
 outputDV <- paste0(path.base, "/03 Datavis Scripts/_output/")
 
+inputTimex <- paste0(path.base, "/04 Publishing/21 Timex/_input/")
+outputTimex <- paste0(path.base, "04 Publishing/21 Timex/_output/")
 
 dirs <- list(credentialsDir,
              inputML, outputML,
              inputEEG, outputEEG,
-             inputDV, outputDV
+             inputDV, outputDV,
+             inputTimex, outputTimex
              )
 
 lapply(dirs, function(dir) assign(toString(dir), dir, envir = .GlobalEnv))
