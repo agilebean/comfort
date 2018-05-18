@@ -229,3 +229,34 @@ create_email_list <- function(email_df)
   return(result)
 }
 
+######################################################################
+# Function remove_descriptive_columns()
+# IN:   descriptive_columns_matrix (matrix)
+#       survey_raw (dataframe)
+# OUT:  out (dataframe)
+######################################################################
+remove_descriptive_columns <- function(descriptive_columns_matrix, survey_raw)
+{
+  # set label and name for descriptive.columns
+  descriptive.columns <- descriptive_columns_matrix %>%
+    as.data.frame %>%
+    setNames(c("label","name"))
+
+  # extract descriptive columns (by label) from survey data
+  survey.descriptive <- survey_raw[, names(survey_raw) %in% descriptive.columns$label]
+
+  # set item names (by name) for descriptive survey
+  survey.descriptive %<>% setNames(descriptive.columns$name)
+
+  # create output object otherwise
+  output <- NULL
+
+  output$descriptive <- survey.descriptive
+
+  survey.data  <- survey_raw[, -which(names(survey_raw) %in% descriptive.columns$label)]
+
+  output$survey <- survey.data
+
+  return(output)
+}
+
