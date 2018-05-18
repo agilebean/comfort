@@ -275,7 +275,7 @@ encode_survey_and_scales <- function(survey_data, LV_labels, LV_scale_list)
   names(LV.item.list) <- LV_labels
 
   # 2. survey.data: set column names from LV.item.list
-  colnames(survey.data) <- LV.item.list %>% unlist %>% as.vector()
+  colnames(survey_data) <- LV.item.list %>% unlist %>% as.vector()
 
   # 3. LV.data.list: extract survey.data columns by item names
   LV.data.list <- lapply(LV.item.list, function(items) survey_data[items] )
