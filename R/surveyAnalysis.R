@@ -260,3 +260,44 @@ remove_descriptive_columns <- function(descriptive_columns_matrix, survey_raw)
   return(output)
 }
 
+######################################################################
+# Function encode_survey_and_scales()
+# IN:   survey_data (dataframe)
+#       LV_labels (list)
+#       LV_scale_list (list)
+# OUT:  out (dataframe)
+######################################################################
+encode_survey_and_scales <- function(survey_data, LV_labels, LV_scale_list)
+{
+  ## Create list of item names for each LV
+  # 1. LV.item.list: assign item names to latent variable labels
+  LV.item.list <- lapply(LV_labels, function(name) assign(name, eval(parse(text = name))))
+  names(LV.item.list) <- LV_labels
+
+  # 2. survey.data: set column names from LV.item.list
+  colnames(survey.data) <- LV.item.list %>% unlist %>% as.vector()
+
+  # 3. LV.data.list: extract survey.data columns by item names
+  LV.data.list <- lapply(LV.item.list, function(items) survey_data[items] )
+
+  # 4. Encoding: apply scale for each LV in LV.data.list
+  survey.factor.list <- mapply(encode_scale_labels, LV.data.list, LV.scale.list)
+
+  survey.numeric.list <- lapply(survey.factor.list, convert_numeric)
+
+  survey.numeric <- survey.numeric.list %>%
+    # remove the scale name from item name
+    setNames(NULL) %>%  as.data.frame
+
+  output <- NULL
+  output$survey <- survey.numeric
+
+  # create scales
+  scales <- lapply(survey.numeric.list, rowMeans) %>% as.data.frame()
+
+  output$scales <- scales
+
+  # scales <- scales %>% dplyr::select(-Attention1, -Attention2)
+
+  return(output)
+}
