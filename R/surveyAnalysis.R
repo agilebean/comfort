@@ -376,3 +376,133 @@ remove_failed_attention_checks <- function(attention_items_matrix,
                  scales_raw_cleaned)
   return(output)
 }
+
+######################################################################
+# Function mediate_all()
+# IN:   vars (vector)
+#       data (dataframe)
+#       no_simulations (numerical)
+#       IDE (boolean)
+# OUT:  best.mediators.ACME (default)
+#       best.mediators.IDE (IDE=TRUE)
+#
+######################################################################
+mediate_all <- function(vars, data, no_simulations=10, IDE = FALSE)
+{
+  require(dplyr)
+  require(mediation)
+  predictor <- vars["predictor"]
+  mediator  <- vars["mediator"]
+  outcome   <- vars["outcome"]
+
+  model.M <- lm(get(mediator) ~ get(predictor), data, na.action = na.omit)
+
+  results.M <- model.M %>% summary %>%
+    # 2nd row: get(predictor), 1st col: Estimate, 4th col: p-value
+    .$coefficients %>% .[2,c(1,4)] %>%
+    as.list %>% as.data.frame %>%
+    # rename columns
+    rename(effect_size_mx = Estimate, p_value_mx = "Pr...t..") %>%
+    # add predictor name
+    mutate(predictor_mx=predictor, mediator_mx=mediator) %T>% print
+
+  model.Y <- lm(get(outcome) ~ get(predictor) + get(mediator), data)
+  # model.Y %>% summary
+  results.Y <- model.Y %>% summary %>%
+    .$coefficients %>% .[2,c(1,4)] %>%
+    as.list %>% data.frame %>%
+    # rename columns
+    rename(effect_size_ym = Estimate, p_value_ym = "Pr...t..") %>%
+    # add predictor name
+    mutate(outcome=outcome, mediator=mediator, predictor=predictor)
+
+  if (IDE)
+  {
+    result <- cbind(results.Y, results.M)
+
+  } else { # IDE==FALSE
+
+    model.mediation <- mediate(model.m = model.M, model.y = model.Y,
+                               treat="get(predictor)", mediator = "get(mediator)",
+                               boot = FALSE,
+                               sims = no_simulations)
+
+    best.mediators.ACME <- summary(model.mediation) %>%
+      .[c("d0", "d0.p", "z0", "z0.p", "n0", "n0.p")] %>%
+      lapply(., function(x) round(x, digits = 2)) %>%
+      as.data.frame() %>%
+      mutate(predictor=predictor, mediator=mediator, outcome=outcome)
+
+    result <- best.mediators.ACME
+
+  }
+  return(result)
+}
+
+######################################################################
+# Function eval_mediations_detailed()
+# IN:   mediation_vars (vector)
+#       data (dataframe)
+#       p_cutoff (numerical)
+# OUT:  best.models.detailed
+#
+# SAVE: best.models.IDE.rds
+#
+######################################################################
+eval_mediations_detailed <- function(mediation_vars, data, p_cutoff)
+{
+  # estimate all mediation models
+  mediation.models <- mediation_vars %>%
+    apply(., 1, mediate_all, data, IDE = TRUE) %>%
+    # convert list with same columns into dataframe
+    do.call(rbind.data.frame, .) %T>% print
+
+  best.models <- mediation.models %>%
+    arrange(desc(effect_size_ym)) %>%
+    # extract only models with significant mediator relationships (y-m and m-x)
+    filter(abs(p_value_ym) <= p_cutoff & abs(p_value_mx) <= p_cutoff) %>%
+    # round only numeric columns
+    lapply(., function(x) if (is.numeric(x)) round(x, 2) else x) %>%
+    as.data.frame
+
+  best.models.IDE <- best.models %>%
+    # estimate indirect effect b*a
+    mutate(IDE = effect_size_ym * effect_size_mx,
+           p_ave = (p_value_ym + p_value_mx)/2) %>%
+    # dplyr::select(ACME, p_ave, outcome, mediator, predictor) %>%
+    dplyr::select(IDE, predictor, mediator, outcome, effect_size_mx, effect_size_ym) %>%
+    dplyr::filter(!(predictor=="CSE_SSCS" & mediator=="CSE_Tierney")) %>%
+    arrange(desc(IDE)) %>%
+    do(rbind(head(.,10), tail(.,10)))
+
+  setwd(outputTimex)
+  saveRDS(best.models.IDE, "best.models.IDE.rds")
+  result <- best.models.detailed
+
+  return(result)
+}
+
+######################################################################
+# Function eval_mediations_ACME()
+# IN:   mediation_vars (vector)
+#       data (dataframe)
+#       no_simulations (numerical)
+# OUT:  best.mediators.ACME
+#
+# SAVE: best.mediators.ACME.n=<no_simulations>.rds
+#
+######################################################################
+eval_mediations_ACME <- function(mediation_vars, data, no_simulations)
+{
+  best.mediators.ACME <-  mediation_vars %>%
+    apply(., 1, mediate_all, data, IDE=FALSE, no_simulations) %>%
+    do.call(rbind.data.frame, .) %>%
+    filter(d0.p < 0.05) %>%
+    arrange(desc(d0),desc(n0), z0)
+
+  setwd(outputTimex)
+  filename <- paste0("best.mediators.ACME.n=", no_simulations, ".rds")
+  saveRDS(best.mediators.ACME, filename)
+  result <- best.mediators.ACME
+  return(result)
+}
