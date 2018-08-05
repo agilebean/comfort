@@ -6,17 +6,9 @@ get_path_base <- function()
 
   if (!(prefix == "/home/rstudio"))
   {
-    if (prefix == "/private/var/folders")
-    {
       prefix <- "/Users/Chaehan/Google Drive"
-
-    } else {
-
-      prefix <- "/home/rstudio"
-    }
   }
 
-  # prefix <- paste0(prefix, "/03 Data Analysis")
   return(prefix)
 }
 
@@ -36,12 +28,15 @@ outputDV <- paste0(path.base, "/03 Data Analysis/03 Datavis Scripts/_output/")
 inputTimex <- paste0(path.base, "/04 Publishing/21 Timex/_input/")
 outputTimex <- paste0(path.base, "/04 Publishing/21 Timex/_output/")
 
+inputSF <- paste0(path.base, "/04 Publishing/23 Smartphone Flow/_input/")
+outputSF <- paste0(path.base, "/04 Publishing/23 Smartphone Flow/_output/")
+
 dirs <- list(credentialsDir,
              inputML, outputML,
              inputEEG, outputEEG,
              inputDV, outputDV,
-             inputTimex, outputTimex
+             inputTimex, outputTimex,
+             inputSF, outputSF
              )
 
 lapply(dirs, function(dir) assign(toString(dir), dir, envir = .GlobalEnv))
-
