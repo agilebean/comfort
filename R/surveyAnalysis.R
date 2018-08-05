@@ -329,3 +329,42 @@ encode_survey_and_scales <- function(survey_data, LV_labels, LV_scale_list)
 
   return(output)
 }
+
+######################################################################
+# Function remove_failed_attention_checks()
+# IN:   survey_numeric (dataframe)
+#       attention_items_matrix (matrix)
+#
+# OUT:  survey_cleaned (dataframe)
+#
+######################################################################
+remove_failed_attention_checks <- function(survey_numeric,
+                                  attention_items_matrix)
+{
+  # set label and name for descriptive.columns
+  attention_items <- attention_items_matrix %>%
+    as.data.frame %>%
+    setNames(c("item","target"))
+
+  # as numbers are interpreted as factors, convert to char! then num!!
+  attention_items$target %<>% as.character %>% as.numeric
+
+  # remove attention item columns, e.g. dplyr::select(-attention1)
+  columns_to_remove <-  attention_items[,"item"] %>% as.vector
+  survey_pruned_items <- survey_numeric %>% dplyr::select(-columns_to_remove)
+  message(paste("removed columns", paste(columns_to_remove, collapse = " ")))
+
+  # get false answers for all attention_items
+  wrong_rows_list <- apply(attention_items, 1, function(row) {
+    which(survey.numeric[as.character(row["item"])] != row["target"])
+  })
+
+  # find the wrong answers' common set among all attention items
+  wrong_rows <- Reduce(intersect, wrong_rows_list)
+
+  # remove wrong answers
+  survey_cleaned <- survey_pruned_items[-wrong_rows,]
+  message(paste("removed", length(wrong_rows), "rows of failed attention checks!"))
+
+  return(survey_cleaned)
+}
