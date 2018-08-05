@@ -230,6 +230,34 @@ create_email_list <- function(email_df)
 }
 
 ######################################################################
+# Function create_survey_data()
+# IN:   survey_key (char)
+#       input_dir (char)
+#       survey_name (char)
+# OUT:  survey.raw (dataframe)
+######################################################################
+create_survey_data <- function(survey_key, input_dir, survey_name)
+{
+  survey.raw <- survey_key %>%  gs_key(lookup = FALSE) %>% gs_read()
+
+  # survey_raw$Timestamp <- as.POSIXct(survey_raw$Timestamp,
+  #                                    format = "%m/%d/%Y %H:%M:%S",
+  #                                    tz = "Asia/Seoul")
+
+  # clean data (rows)
+  survey.raw %<>%
+    # remove Timestamp
+    .[,-1] %>%
+    # remove duplicates
+    .[!duplicated(.),]
+
+  # remove Timestamp and save
+  setwd(input_dir)
+  saveRDS(survey.raw, survey_name)
+  return(survey.raw)
+}
+
+######################################################################
 # Function remove_descriptive_columns()
 # IN:   descriptive_columns_matrix (matrix)
 #       survey_raw (dataframe)
