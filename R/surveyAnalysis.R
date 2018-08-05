@@ -368,5 +368,6 @@ remove_failed_attention_checks <- function(attention_items_matrix,
   survey_descriptive_cleaned <- survey_descriptive[-wrong_rows,]
   message(paste("removed", length(wrong_rows), "rows of failed attention checks!"))
 
-  return(survey_numeric_cleaned, survey_descriptive_cleaned)
+  output <- list(survey_numeric_cleaned, survey_descriptive_cleaned)
+  return(output)
 }
