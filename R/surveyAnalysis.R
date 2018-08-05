@@ -487,22 +487,27 @@ eval_mediations_detailed <- function(mediation_vars, data, p_cutoff)
 # IN:   mediation_vars (vector)
 #       data (dataframe)
 #       no_simulations (numerical)
+#       p_cutoff (numerical)
+#       output_dir (char)
 # OUT:  best.mediators.ACME
 #
 # SAVE: best.mediators.ACME.n=<no_simulations>.rds
 #
 ######################################################################
-eval_mediations_ACME <- function(mediation_vars, data, no_simulations)
+eval_mediations_ACME <- function(mediation_vars, data, no_simulations,
+                                 p_cutoff, output_dir)
 {
   best.mediators.ACME <-  mediation_vars %>%
-    apply(., 1, mediate_all, data, IDE=FALSE, no_simulations) %>%
+    apply(., 1, mediate_all,
+          data = scales.standardized, IDE=FALSE, no_simulations) %>%
     do.call(rbind.data.frame, .) %>%
-    filter(d0.p < 0.05) %>%
+    filter(d0.p < p_cutoff) %>%
     arrange(desc(d0),desc(n0), z0)
 
-  setwd(outputTimex)
+  setwd(output_dir)
   filename <- paste0("best.mediators.ACME.n=", no_simulations, ".rds")
   saveRDS(best.mediators.ACME, filename)
+
   result <- best.mediators.ACME
   return(result)
 }
