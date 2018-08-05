@@ -340,7 +340,8 @@ encode_survey_and_scales <- function(survey_data, LV_labels, LV_scale_list)
 ######################################################################
 remove_failed_attention_checks <- function(attention_items_matrix,
                                            survey_numeric,
-                                           survey_descriptive)
+                                           survey_descriptive,
+                                           scales_raw)
 {
   # set label and name for descriptive.columns
   attention_items <- attention_items_matrix %>%
@@ -364,10 +365,14 @@ remove_failed_attention_checks <- function(attention_items_matrix,
   wrong_rows <- Reduce(intersect, wrong_rows_list)
 
   # remove wrong answers
-  survey_numeric_cleaned <- survey_pruned_items[-wrong_rows,]
-  survey_descriptive_cleaned <- survey_descriptive[-wrong_rows,]
+  survey_numeric_cleaned      <- survey_pruned_items[-wrong_rows,]
+  survey_descriptive_cleaned  <- survey_descriptive[-wrong_rows,]
+  scales_raw_cleaned          <- scales_raw[-wrong_rows,]
+
   message(paste("removed", length(wrong_rows), "rows of failed attention checks!"))
 
-  output <- list(survey_numeric_cleaned, survey_descriptive_cleaned)
+  output <- list(survey_numeric_cleaned,
+                 survey_descriptive_cleaned,
+                 scales_raw_cleaned)
   return(output)
 }
