@@ -193,7 +193,7 @@ print_fa2pdf <- function(fa_list, file_name) {
 print_cluster_no <- function(item_list, file_name)
 {
   require(NbClust)
-  plot.list <- lapply(item.list, function(items) {
+  plot.list <- lapply(item_list, function(items) {
     NbClust(items, min.nc=2, max.nc=15, method="kmeans") %$%
       .$Best.nc[1,] %>% table  %>%
       barplot(xlab="Number of Clusters", ylab="Number of Criteria",
