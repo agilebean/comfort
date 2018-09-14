@@ -499,13 +499,14 @@ eval_mediations_ACME <- function(mediation_vars, data, no_simulations,
 {
   best.mediators.ACME <-  mediation_vars %>%
     apply(., 1, mediate_all,
-          data = scales.standardized, IDE=FALSE, no_simulations) %>%
+          data = data, IDE=FALSE, no_simulations) %>%
     do.call(rbind.data.frame, .) %>%
     filter(d0.p < p_cutoff) %>%
     arrange(desc(d0),desc(n0), z0)
 
   setwd(output_dir)
-  filename <- paste0("best.mediators.ACME.n=", no_simulations, ".rds")
+  filename <- paste0("best.mediators.ACME.n=", dim(data)[1],
+                     ".sim=", no_simulations,".rds")
   saveRDS(best.mediators.ACME, filename)
 
   result <- best.mediators.ACME
