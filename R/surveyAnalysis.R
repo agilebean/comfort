@@ -358,11 +358,11 @@ remove_failed_attention_checks <- function(attention_items_matrix,
 
   # get false answers for all attention_items
   wrong_rows_list <- apply(attention_items, 1, function(row) {
-    which(survey.numeric[as.character(row["item"])] != row["target"])
+    which(survey.numeric[as.character(row["item"])] != row["target"]) %>% as.list
   })
 
   # find the wrong answers' common set among all attention items
-  wrong_rows <- Reduce(intersect, wrong_rows_list)
+  wrong_rows <- Reduce(intersect, wrong_rows_list) %>% unlist
 
   # remove wrong answers
   survey_numeric_cleaned      <- survey_pruned_items[-wrong_rows,]
