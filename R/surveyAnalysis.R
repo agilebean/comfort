@@ -497,12 +497,21 @@ eval_mediations_detailed <- function(mediation_vars, data, p_cutoff)
 eval_mediations_ACME <- function(mediation_vars, data, no_simulations,
                                  p_cutoff, output_dir)
 {
+  # enable parallel processing with cluster
+  require(parallel)
+  # Calculate the number of cores
+  no_cores <- detectCores() - 1
+  # Initiate cluster
+  cluster <- makeCluster(no_cores, type = "FORK")
+
   best.mediators.ACME <-  mediation_vars %>%
-    apply(., 1, mediate_all,
+    parApply(cluster, ., 1, mediate_all, # replaces: apply(., 1, mediate_all,
           data = data, IDE=FALSE, no_simulations) %>%
     do.call(rbind.data.frame, .) %>%
     filter(d0.p < p_cutoff) %>%
     arrange(desc(d0),desc(n0), z0)
+
+  stopCluster(cluster)
 
   setwd(output_dir)
   filename <- paste0("best.mediators.ACME.n=", dim(data)[1],
