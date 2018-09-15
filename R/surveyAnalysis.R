@@ -378,7 +378,7 @@ remove_failed_attention_checks <- function(attention_items_matrix,
 }
 
 ######################################################################
-# Function mediate_all()
+# Function mediate_each()
 # IN:   vars (vector)
 #       data (dataframe)
 #       no_simulations (numerical)
@@ -387,7 +387,7 @@ remove_failed_attention_checks <- function(attention_items_matrix,
 #       best.mediators.IDE (IDE=TRUE)
 #
 ######################################################################
-mediate_all <- function(vars, data, no_simulations=10, IDE = FALSE)
+mediate_each <- function(vars, data, no_simulations=10, IDE = FALSE)
 {
   require(dplyr)
   require(mediation)
@@ -404,7 +404,7 @@ mediate_all <- function(vars, data, no_simulations=10, IDE = FALSE)
     # rename columns
     rename(effect_size_mx = Estimate, p_value_mx = "Pr...t..") %>%
     # add predictor name
-    mutate(predictor_mx=predictor, mediator_mx=mediator) %T>% print
+    mutate(predictor_mx=predictor, mediator_mx=mediator)
 
   model.Y <- lm(get(outcome) ~ get(predictor) + get(mediator), data)
   # model.Y %>% summary
@@ -436,6 +436,7 @@ mediate_all <- function(vars, data, no_simulations=10, IDE = FALSE)
     result <- best.mediators.ACME
 
   }
+  print(result)
   return(result)
 }
 
@@ -453,7 +454,7 @@ eval_mediations_detailed <- function(mediation_vars, data, p_cutoff)
 {
   # estimate all mediation models
   mediation.models <- mediation_vars %>%
-    apply(., 1, mediate_all, data, IDE = TRUE) %>%
+    apply(., 1, mediate_each, data, IDE = TRUE) %>%
     # convert list with same columns into dataframe
     do.call(rbind.data.frame, .) %T>% print
 
@@ -505,11 +506,11 @@ eval_mediations_ACME <- function(mediation_vars, data, no_simulations,
   cluster <- makeCluster(no_cores, type = "FORK")
 
   best.mediators.ACME <-  mediation_vars %>%
-    parApply(cluster, ., 1, mediate_all, # replaces: apply(., 1, mediate_all,
+    parApply(cluster, ., 1, mediate_each, # replaces: apply(., 1, mediate_each,
           data = data, IDE=FALSE, no_simulations) %>%
     do.call(rbind.data.frame, .) %>%
     filter(d0.p < p_cutoff) %>%
-    arrange(desc(d0),desc(n0), z0)
+    arrange(desc(d0),desc(n0), z0) %T>% print
 
   stopCluster(cluster)
 
@@ -518,6 +519,5 @@ eval_mediations_ACME <- function(mediation_vars, data, no_simulations,
                      ".sim=", no_simulations,".rds")
   saveRDS(best.mediators.ACME, filename)
 
-  result <- best.mediators.ACME
-  return(result)
+  return(best.mediators.ACME)
 }
