@@ -6,9 +6,12 @@
 
 #
 # in DD3 Analysis v1.3 ggplot.boxplots.R
+# Design Analysis.R
 #
-create_boxplot_mean_gg <- function(data, xlabel, ylabel=NULL, title)
+create_boxplot_mean_gg <- function(data, xlabel, ylabel=NULL, title,
+                                   font_family, hline_color)
 {
+  require(ggplot2)
   # if data became matrix (e.g. after transpose), then names don't exist
   if (is.null(names(data)))
   {
@@ -23,19 +26,21 @@ create_boxplot_mean_gg <- function(data, xlabel, ylabel=NULL, title)
   # Much better for displaying boxplots for all columns in a dataframe:
   # reshape2::melt() transforms dataframe to ggplot input
   # SUPER!
+
+  # verify font_family by showtext::font_families()
   g   <-  ggplot(data = melt(data), aes(x=variable, y=value)) + theme_bw()
   gg  <-  g + geom_boxplot(aes(fill=variable)) +
     ggtitle(title) +
-    theme(plot.title = element_text(hjust=.5, size=32, face="bold", family="gillsans")) +
+    theme(plot.title = element_text(hjust=.5, size=32, face="bold", family=font_family)) +
     xlab(xlabel) +
-    theme(axis.title = element_text(size=20, face="bold", family="gillsans"),
+    theme(axis.title = element_text(size=20, face="bold", family=font_family),
           axis.title.x = element_text(margin = unit(c(3, 0, 0, 0), "mm")),
           axis.title.y = element_blank()) +
-    theme(axis.text = element_text(size = 20, family="gillsans", margin = 40)) +
+    theme(axis.text = element_text(size = 20, family=font_family, margin = 40)) +
     theme(legend.position="none") +
     ## color outside aes!!!
     ## size denotes line width
-    geom_hline(aes(yintercept=mean), color="khaki3", linetype="dashed", size=1.4) +
+    geom_hline(aes(yintercept=mean), color=hline_color, linetype="dashed", size=1.4) +
     background_grid(major = "xy", minor = "none") +
     # fix scale range 1 to 5
     scale_y_continuous(limits=c(1,5))
@@ -49,7 +54,7 @@ create_boxplot_mean_gg <- function(data, xlabel, ylabel=NULL, title)
   return(gg)
 }
 
-
+# requires ghostscript! >>brew install ghostscript
 find_jpg_from_id <- function(id, path_list)
 {
   require("magick")
@@ -74,7 +79,8 @@ plot_raster = function(raster_image)
   print(output) # in for loop, must explicitly print image object, return doesn't work
 }
 
-plot_hist_by <- function(id, data, hist_var, by_var)
+plot_hist_by <- function(id, data, hist_var, by_var,
+                         font_family = "sans", vline_color = "khaki3")
 {
   # Extract the hist_var column from data and calculate mean
   hist_var.col.name   <- paste0(id, ".", hist_var) # e.g. <id>.NPS
@@ -90,19 +96,20 @@ plot_hist_by <- function(id, data, hist_var, by_var)
                         fill=factor(get(fill.factor)))) +
     ggtitle(hist_var) +
     theme_bw() +
-    theme(plot.title = element_text(hjust=.5, size=32, face="bold", family="gillsans")) +
+    theme(plot.title = element_text(hjust=.5, size=32, face="bold", family=font_family)) +
     geom_bar(color="black") +
     xlab(id) +
     guides(fill=guide_legend(title=by_var)) +
-    theme(axis.title = element_text(size=20, face="bold", family="gillsans"),
+    theme(axis.title = element_text(size=20, face="bold", family=font_family),
           axis.title.x = element_text(margin = unit(c(3, 0, 0, 0), "mm")),
           axis.title.y = element_blank()) +
-    theme(axis.text = element_text(size = 20, family="gillsans", margin = 40)) +
+    theme(axis.text = element_text(size = 20, family=font_family, margin = 40)) +
     theme(legend.position = c(1, 0.5)) +
     scale_x_discrete(breaks = 1:10, limits = 1:10) + # for factor: discrete. limits: EACH value!
     scale_y_continuous(limits = c(0,5)) +
     background_grid(major = "xy", minor = "none") +
-    geom_vline(aes(xintercept=hist_var.mean), color="khaki3", linetype="dashed", size=1.4)
+    geom_vline(aes(xintercept=hist_var.mean),
+               color=vline_color, linetype="dashed", size=1.4)
 
   # in a for loop, ggplot must explicitly be printed insted of returned!!!
   return(g)
