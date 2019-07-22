@@ -230,13 +230,35 @@ create_email_list <- function(email_df)
 }
 
 ######################################################################
+# Function filename.n
+# IN:   filename (string), sample_size (numeric)
+# OUT:  filename in data dir with sample size and file extension (string)
+######################################################################
+filename.n <- function(filename, sample_size) {
+
+  caller <- sys.call(-1)
+  caller %>% print
+  caller %<>% as.character %>% .[1] %>% print
+
+  if (str_detect(caller, "saveRDS") | str_detect(caller, "readRDS")) {
+    file.extension <- ".rds"
+    # } else if (caller == "write_csv" | caller == "write.csv") {
+  } else if (caller == "standardise_path") {
+    file.extension <- ".csv"
+  }
+  paste0("data/", filename, ".n=", sample_size, file.extension) %T>% print
+}
+
+######################################################################
 # Function create_survey_data()
 # IN:   survey_key (char)
 #       input_dir (char)
 #       survey_name (char)
 # OUT:  survey.raw (dataframe)
 ######################################################################
-create_survey_data <- function(survey_key, input_dir, survey_name)
+create_survey_data <- function(survey_key, input_dir, survey_name,
+                               start_date = NULL, end_date = NULL,
+                               descriptive_columns = NULL)
 {
   survey.raw <- survey_key %>%  gs_key(lookup = FALSE) %>% gs_read()
 
