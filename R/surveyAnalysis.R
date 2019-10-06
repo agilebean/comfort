@@ -77,7 +77,7 @@ do_factor_analysis <- function(items_input, n_factors, factor_method,
 # IN:   items (dataframe), max_factors(integer), factor_methods(string)
 # OUT:  result (dataframe)
 ######################################################################
-iterate_factor_analysis <- function(items, max_factors, factor_methods)
+iterate_factor_analysis <- function(items, max_factors = 5, factor_methods = c("pca", "fa"))
 {
   result <- NULL
 
@@ -99,7 +99,7 @@ iterate_factor_analysis <- function(items, max_factors, factor_methods)
   result <- as.data.frame(result)
   # round() needs numeric input!
   result[,3:4] <- round(convert_numeric(result[,3:4]), digits = 2)
-  colnames(result) <- c("factor method", "no_factors", "RMSR", "Fit.off", "matrix")
+  colnames(result) <- c("no_factors", "factor method", "RMSR", "Fit.off", "matrix")
   return(result)
 }
 
