@@ -44,8 +44,8 @@ determine_factor_extraction_no <- function(items_df)
 #       corr_type(string), cut_off(dbl): below factors loadings suppressed
 # OUT:  output (dataframe)
 ######################################################################
-do_factor_analysis <- function(items_input, n_factors, factor_method,
-                               corr_type, cut_off=NULL)
+do_factor_analysis <- function(items_input, n_factors = 3, factor_method = "fa",
+                               corr_type = "cor", cut_off = NULL)
 {
   require(dplyr)
   items <- na.omit(items_input)
@@ -67,7 +67,8 @@ do_factor_analysis <- function(items_input, n_factors, factor_method,
   cutoff <- ifelse(cut_off, cut_off, 0)
   output$weights %<>% # updates input after feeding into pipe
     replace(., .>-cutoff & .<cutoff, NA) %>%
-    round(., digits = 2) %>% print(., na.print="")
+    round(., digits = 2) %>%
+    print(., na.print="")
 
   return(output)
 }
