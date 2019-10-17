@@ -73,37 +73,6 @@ do_factor_analysis <- function(items_input, n_factors = 3, factor_method = "fa",
   return(output)
 }
 
-######################################################################
-# Function iterate_factor_analysis()
-# IN:   items (dataframe), max_factors(integer), factor_methods(string)
-# OUT:  result (dataframe)
-######################################################################
-iterate_factor_analysis <- function(items, max_factors = 5, factor_methods = c("pca", "fa"))
-{
-  result <- NULL
-
-  for (no_factors in 1:max_factors)
-  {
-    for (method in factor_methods)
-    {
-      # rotate on correlation matrix
-      fa <- do_factor_analysis(items, no_factors, method, "cor")
-      fa.cor <- c(no_factors, method, fa$rms, fa$fit.off, "cor")
-      # rotate on covariance matrix
-      fa <- do_factor_analysis(items, no_factors, method, "cov")
-      fa.cov <- c(no_factors, method, fa$rms, fa$fit.off, "cov")
-      result <- rbind(result, fa.cov, fa.cor)
-    }
-  }
-  # dataframe requires non-duplicate row
-  row.names(result) <- NULL
-  result <- as.data.frame(result)
-  # round() needs numeric input!
-  result[,3:4] <- round(convert_numeric(result[,3:4]), digits = 2)
-  colnames(result) <- c("no_factors", "factor method", "RMSR", "Fit.off", "matrix")
-  return(result)
-}
-
 
 ######################################################################
 # Function get_alpha()
